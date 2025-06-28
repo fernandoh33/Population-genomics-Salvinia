@@ -1,9 +1,9 @@
 #!/bin/bash
-#SBATCH --account=def-rieseber
+#SBATCH --account=your-account
 #SBATCH --time=1-00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=5
-#SBATCH --mem=60G
+#SBATCH --mem=50G
 #SBATCH --cpus-per-task=8
 
 module load StdEnv/2023
@@ -13,7 +13,7 @@ REF=reference/S_molesta_cleaned_46_chr.fasta
 
 mkdir geno.files sfs.files theta.files
 
-#Creating genotype likelihoods files for each chromosome, for files including invaraint sites I generate one per chromosome only because file are too large
+#Creating genotype likelihoods files for each chromosome, for files including invaraint sites I chosen 100 random 100kb windows across the genome 
 for chr in $(cat salvinia.chromosomes);
 do angsd -bam bam.list -nInd 100 -minInd 10 -doSaf 1 -baq 1 -anc $REF -ref $REF -GL 2 -P 8 -minMapQ 30 -minQ 20 -out geno.files/$chr.all.samples.w.invariants.0.1 -r $chr:
 done;
