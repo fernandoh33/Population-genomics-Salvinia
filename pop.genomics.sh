@@ -46,11 +46,7 @@ done;
 cat header.beagle tmp*.filtered.txt | bgzip -c > all.chrs.4fold.positions.maf.0.01.beagle.gz
 rm tmp*
 
-#Ideally snps should be filtered by low LD for population genomic analyses, though in this case all samples seems to be a single clone with very low diversity, so we are using all snps and the 4fold sites
-#Run pcangsd with the snps dataset, testing different maf filtering is recommended;
+#pcangsd using 4-fold degenerate sites and three distinct maf;
 for maf in 0.01 0.05 0.1;
 do pcangsd -b all.chrs.4fold.positions.maf.0.01.beagle.gz -t 8 --maf $maf -o out.pcangsd.4fold.sites.maf$maf.minInd0.1;
-done
-
-#Run NGSadmix
-for i in `seq 1 5`;do NGSadmix -likes all.chrs.4fold.positions.maf.0.01.beagle.gz -K $i -outfiles out.admixure.4fold.sites.maf0.01.minInd0.1.K$i -P 12;done
+done;
