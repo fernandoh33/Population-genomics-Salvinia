@@ -11,7 +11,7 @@ export JAVA_TOOL_OPTIONS="-Xms256m -Xmx2g"
 
 RAW=fastq.files
 TRIMDIR=trimmed.samples
-GENOME=reference/your_reference.fasta
+REF=reference/S_molesta_cleaned_46_chr.fasta
 BAMDIR=bam.files
 S1=_R1.fastq.gz
 S2=_R2.fastq.gz
@@ -26,7 +26,7 @@ module load bwa/0.7.18
 module load qualimap/2.3
 
 #Index the Genome
-bwa index $GENOME
+bwa index $REF
 
 #Create Sequence List
 #ls $RAW | grep $S1 | sed 's/_R1.fastq.gz//' | sort -u > list.samples.txt
@@ -44,7 +44,7 @@ done
 
 #Run Alignment, index, and bam statistics
 for i in $(cat list.samples.txt);
-do bwa mem -t 60 $GENOME $TRIMDIR/$i$S1 $TRIMDIR/$i$S2|samtools view -bh|samtools sort -T tmp -@ 60 -o $BAMDIR/$i'.bam';
+do bwa mem -t 60 $REF $TRIMDIR/$i$S1 $TRIMDIR/$i$S2|samtools view -bh|samtools sort -T tmp -@ 60 -o $BAMDIR/$i'.bam';
 samtools index -@ 60 $BAMDIR/$i'.bam';
 bamtools stats -in $BAMDIR/$i'.bam' > $BAMDIR/$i'_bamstats.txt';
 qualimap bamqc -bam $BAMDIR/${i}'.bam' -outdir $BAMDIR/${i}_qualimap -outfile ${i}_qualimap_report.txt -nt 60;
