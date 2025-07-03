@@ -18,12 +18,12 @@ for chr in $(cat salvinia.chromosomes);
 do angsd -bam bam.list -nInd 100 -minInd 10 -doSaf 1 -baq 1 -anc $REF -ref $REF -GL 2 -P 8 -minMapQ 30 -minQ 20 -out geno.files/$chr.all.samples.w.invariants.0.1 -r $chr:
 done;
 
-#Estimating sfs for each chromosome, make sure to include -fold 1 if you don't have an ancestral reference to polarize the snps
+#Estimating sfs for each chromosome, -fold 1 is included because we do not have an ancestral reference to polarize the snps
 for chr in $(cat salvinia.chromosomes);
 do realSFS geno.files/$chr.all.samples.w.invariants.0.1.saf.idx -P 8 -fold 1 > sfs.files/$chr.sfs;
-#Estimating diversity and neutrality statistics from the sfs, include -fold 1 here too
+#Estimating diversity and neutrality statistics from the sfs, need to include the flag -fold 1 here too
 realSFS saf2theta geno.files/$chr.all.samples.w.invariants.0.1.saf.idx -sfs sfs.files/$chr.sfs -outname theta.files/$chr.w.invariants.0.1 -fold 1;
-#When statistics are estiamated for each site, is possible to estimate statistics by windows (here 100kb) or a global statistic (one per chromosome in this case)
+#When statistics are estimated for each site, is possible to estimate statistics by windows (here 100kb) or a global statistic (one per chromosome in this case)
 thetaStat do_stat theta.files/$chr.w.invariants.0.1.thetas.idx -win 100000 -step 100000 -outnames theta.files/$chr.theta.w100.s100;
 done;
 
