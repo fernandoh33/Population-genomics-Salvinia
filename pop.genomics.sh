@@ -10,6 +10,7 @@ module load StdEnv/2023
 module load angsd/0.940
 
 REF=reference/S_molesta_cleaned_46_chr.fasta
+ANN=reference/*gff
 
 mkdir geno.files sfs.files theta.files
 
@@ -31,6 +32,12 @@ done;
 for chr in $(cat salvinia.chromosomes);
 do angsd -bam bam.list -fai $REF.fai -ref $REF -nInd 100 -minInd 10 -doMajorMinor 1 -doPost 1 -doMaf 1 -doGlf 2 -out geno.files/$chr.all.samples.snps.maf0.01.minInd0.1 -gl 2 -minMapQ 30 -minQ 20 -minMaf 0.01 -SNP_pval 1e-6 -nThreads 8 -baq 1;
 done;
+
+#degeneracy annotation for coding transcripts
+degenotate/degenotate.py -a $ANN -g $REF-o out.degenotate/ -d --overwrite
+
+#extract 4fold degenerate sites
+awk '{if($5==4) print $1":"$2}' out.degenotate/degeneracy-all-sites.bed > 4fold.positions
 
 #merge beagle files, the code is useful to filter beagle files using a list of positions, in this case 4-fold degenerate sites
 #extract the header from any chromosome beagle file, for example Chr_10
